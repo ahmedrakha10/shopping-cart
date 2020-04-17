@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Cart;
 use App\Product;
+use Cartalyst\Stripe\Laravel\Facades\Stripe;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -28,10 +29,46 @@ class ProductController extends Controller
         }
         $cart->add($product);
         session()->put('cart', $cart);
-        return redirect(route('products.index'))->with('success', 'product has been added to cart successfully');
+        toast('product has been added to cart successfully', 'success');
+        return redirect(route('products.index'));
     }
 
-    
+    public function showCart()
+    {
+        if (session()->has('cart')) {
+            $cart = new Cart(session()->get('cart'));
+        } else {
+            $cart = null;
+        }
+        return view('cart.show', compact('cart'));
+    }
+
+    public function checkout($amount)
+    {
+        return view('cart.checkout', compact('amount'));
+    }
+
+    public function charge(Request $request)
+    {
+        $charge = Stripe::charges()->create([
+                                                'currency'    => 'USD',
+                                                'source'      => $request->stripeToken,
+                                                'amount'      => $request->amount,
+                                                'description' => 'test a transaction',
+                                            ]);
+        $chargeId = $charge['id'];
+        if ($chargeId) {
+            // save order
+            auth()->user()->orders()->create([
+                                                 'cart' => serialize(session()->get('cart'))
+                                             ]);
+            session()->forget('cart');
+            toast('Payment has been done successfully', 'success');
+            return redirect(route('store'));
+        } else {
+            return redirect()->back();
+        }
+    }
 
     /**
      * Show the form for creating a new resource.

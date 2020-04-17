@@ -12,6 +12,7 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
 
+
     <!-- Fonts -->
     <script src="https://kit.fontawesome.com/5bce7fa628.js" crossorigin="anonymous"></script>
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -19,6 +20,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    @yield('style')
 </head>
 <body>
 <div id="app">
@@ -36,15 +38,19 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <!-- Left Side Of Navbar -->
                 <ul class="navbar-nav mr-auto">
-
+                     <li class="nav-item">
+                         <a href="{{route('store')}}" class="nav-link">Store</a>
+                     </li>
                 </ul>
 
                 <!-- Right Side Of Navbar -->
                 <ul class="navbar-nav ml-auto">
                     <!-- Authentication Links -->
-                    <a href="#" class="nav-link">
+
+
+                    <a href="{{route('cart.show')}}" class="nav-link">
                             <span class="fas fa-shopping-cart">
-                                My Cart ( {{session()->has('cart') ? session()->get('cart')->totalQty : ''}} )
+                                My Cart ( {{session()->has('cart') ? session()->get('cart')->totalQty : '0'}} )
                             </span>
                     </a>
                     @guest
@@ -64,10 +70,13 @@
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                <a href="{{route('order.index')}}" class="dropdown-item">Orders<i class="fa fa-grip-horizontal ml-2"></i></a>
+                                <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                    onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                                     {{ __('Logout') }}
+                                    <i class="fa fa-sign-out-alt ml-2"></i>
                                 </a>
 
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST"
@@ -86,5 +95,7 @@
         @yield('content')
     </main>
 </div>
+@include('sweetalert::alert')
+@yield('script')
 </body>
 </html>
