@@ -25,3 +25,5 @@ Route::get('show-cart', 'ProductController@showCart')->name('cart.show');
 Route::get('checkout/{amount}', 'ProductController@checkout')->name('cart.checkout')->middleware('auth');
 Route::post('charge', 'ProductController@charge')->name('cart.charge');
 Route::get('orders', 'OrderController@index')->name('order.index');
+Route::delete('remove-item/{product}', 'ProductController@destroy')->name('cart.remove');
+Route::put('update-qty/{product}', 'ProductController@update')->name('qty.update');

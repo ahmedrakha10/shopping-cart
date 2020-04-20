@@ -122,7 +122,14 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $request->validate([
+                               'qty' => 'required|numeric|min:1'
+                           ]);
+        $cart = new Cart(session()->get('cart'));
+        $cart->updateQty($product->id , $request->qty);
+        session()->put('cart',$cart);
+        toast('quantity has been changed','success');
+        return redirect()->back();
     }
 
     /**
@@ -133,6 +140,14 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $cart = new Cart(session()->get('cart'));
+        $cart->remove($product->id);
+        if ($cart->totalQty <= 0) {
+            session()->forget('cart');
+        } else {
+            session()->put('cart', $cart);
+        }
+        toast('Item has been deleted successfully', 'success');
+        return redirect(route('cart.show'));
     }
 }

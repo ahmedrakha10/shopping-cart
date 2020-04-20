@@ -5,6 +5,15 @@
         <div class="row">
             @if($cart)
                 <div class="col-md-8">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     @foreach($cart->items as $item)
                         <div class="card mb-2">
                             <div class="card-body">
@@ -12,10 +21,27 @@
                                     {{$item['title']}}
                                 </h5>
                                 <div class="card-text">
-                                    ${{$item['price']}}
-                                    <a href="#" class="btn btn-danger btn-sm ml-4">remove</a>
-                                    <input type="number" name="qty" id="qty" value="{{$item['qty']}}"/>
-                                    <a href="#" class="btn btn-secondary btn-sm">change</a>
+                                    <p style="margin-bottom: -24px">${{$item['price']}}</p>
+
+
+                                    {{--<a href="#" class="btn btn-secondary btn-sm">change</a>--}}
+                                    <form action="{{route('qty.update',$item['id'])}}" method="post"
+                                          style="margin-left: 60px;">
+                                        @csrf
+                                        @method('put')
+                                        <input type="text" name="qty" id="qty" value="{{$item['qty']}}"/>
+                                        <button class="btn btn-primary btn-sm">
+                                            change
+                                        </button>
+                                    </form>
+
+                                    <form action="{{route('cart.remove',$item['id'])}}" method="post">
+                                        @csrf
+                                        @method('delete')
+                                        <button class="btn btn-danger btn-sm ml-4"
+                                                style="float: right;margin-top: -30px;">Remove
+                                        </button>
+                                    </form>
                                 </div>
 
                             </div>
